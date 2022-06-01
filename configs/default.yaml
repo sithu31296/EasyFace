@@ -1,0 +1,18 @@
+DEVICE: 'cuda'
+SAVE_DIR: 'output'
+
+TRAIN_ROOT: '/home/sithu/datasets/lfw_split/train'
+TRAIN_LIST: 'lfw_train.txt'
+NUM_CLASSES: 4587
+
+TEST_ROOT: '/home/sithu/datasets/lfw_split/test'
+TEST_LIST: 'lfw_test_pair.txt'
+
+IMAGE_SIZE: [128, 128]
+EPOCHS: 100
+BATCH_SIZE: 16
+LR: 0.01
+WEIGHT_DECAY: 0.0005
+STEP_SIZE: 10
+
+MODEL_PATH: 'output/arcface.pth'
