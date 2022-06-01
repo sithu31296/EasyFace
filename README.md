@@ -63,7 +63,7 @@ $ python detect_align.py \
 
 > Need to download the pretrained weights for Face Detection and Face Recognition models from [Benchmarks & Pretrained Models](#benchmarks--pretrained-models) section.
 
-Find the similarities between the given images:
+#### Find Similarities of Given Images
 
 ```bash
 $ python find_similarity.py \
@@ -88,7 +88,7 @@ tensor([[1.0000, 0.0028, 0.0021],
 ```
 
 
-To register the new faces to a database:
+#### Register New Faces
 * Create a folder containing the face images.
 * One image per person.
 * Rename the filename of the image to a person's name.
@@ -117,7 +117,7 @@ Sample testing structure:
     |__ faces.pkl (output)
 ```
 
-To recognize with a webcam or an image associated with the face database created in last step:
+#### Recognize with a Webcam or an Image
 
 ```bash
 # with an image
