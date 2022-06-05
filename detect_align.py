@@ -79,6 +79,17 @@ class FaceDetectAlign:
                 faces.append(torch.as_tensor(warped_face))
         return torch.stack(faces), all_dets, images
 
+    def detect_and_crop_faces(self, img_paths: Union[np.ndarray, str, list], crop_size: Tuple[int, int] = (112, 112)) -> Tuple[torch.Tensor, List[np.ndarray], np.ndarray]:
+        all_dets, images = self.detect_faces(img_paths)
+        faces = []
+        for dets, image in zip(all_dets, images):
+            boxes = dets[:, :4].astype(int)
+            for box in boxes:
+                x1, y1, x2, y2 = box
+                face = cv2.resize(image[y1:y2, x1:x2, :], crop_size)
+                faces.append(torch.as_tensor(face))
+        return torch.stack(faces), all_dets, images
+
     def detect_faces(self, img_paths: Union[str, list, np.ndarray]) -> Tuple[List[np.ndarray], np.ndarray]:
         image = self.read_image(img_paths)
         pimage = self.preprocess(image)

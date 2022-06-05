@@ -56,3 +56,6 @@ if __name__ == '__main__':
         image_paths = list(file_path.glob('*'))
         features, identities = inference(image_paths)
         pickle.dump({'embeddings': features, 'ids': identities}, open(output, 'wb'))
+    
+    else:
+        raise FileNotFoundError

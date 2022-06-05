@@ -21,9 +21,9 @@ class AdaFace(nn.Module):
         self.kernel = nn.Parameter(torch.Tensor(embedding_size, num_classes))
         self.kernel.data.uniform_(-1, 1).renorm_(2, 1, 1e-5).mul_(1e5)
 
-        self.register_buffer('t', torch.zeros(1))
         self.register_buffer('batch_mean', torch.ones(1)*20)
         self.register_buffer('batch_std', torch.ones(1)*100)
+        # self.norm_layer = nn.BatchNorm1d(1, eps=self.eps, momentum=self.t_alpha, affine=False)
 
     def forward(self, feats: Tensor, norms: Tensor, label: Tensor) -> Tensor:
         kernel_norm = l2_norm(self.kernel, dim=0)
@@ -38,6 +38,7 @@ class AdaFace(nn.Module):
             self.batch_std = std * self.t_alpha + (1 - self.t_alpha) * self.batch_std
 
         margin_scaler = (safe_norms - self.batch_mean) / (self.batch_std + self.eps)    # 66% between -1, 1
+        # margin_scaler = self.norm_layer(safe_norms)
         margin_scaler = margin_scaler * self.h                                          # 68% between -0.333, 0.333 when h:0.333
         margin_scaler = torch.clip(margin_scaler, -1, 1)
 

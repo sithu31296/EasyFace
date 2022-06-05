@@ -8,7 +8,7 @@
     * [Face & Landmark Detection](#face--landmark-detection)
     * [Face Recognition](#face-recognition)
     * [Facial Expression Recognition](#facial-expression-recognition)
-    * [Age & Gender Estimation](#age--gender-estimation)
+    * [Facial Attribute Classification (Gender, Age, Race)](#facial-attribute-classification)
 * [References](#references)
 
 
@@ -22,13 +22,24 @@ Face Recognition
 
 * [AdaFace](https://arxiv.org/abs/2204.00964) (CVPR 2022)
 
+Facial Expression Recognition
+
+* [DAN](https://arxiv.org/abs/2109.07270) (ArXiv 2021)
+
+Facial Attribute Classification
+
+* [FairFace](https://arxiv.org/abs/1908.04913v1) (WACV 2021)
+* [FSCL](https://arxiv.org/abs/2203.16209v1) (CVPR 2022) (Coming Soon...)
+
 
 ## Benchmarks & Pretrained Models
 
 Check the models' comparison and download their pretrained weights from below.
 
-* [Face & Landmark Detection](./easyface/detection/README.md)
-* [Face Recognition](./easyface/recognition/README.md)
+* [Face & Landmark Detection](./easyface/detection/README.md#pretrained-models)
+* [Face Recognition](./easyface/recognition/README.md#pretrained-models)
+* [Facial Expression Recognition](./easyface/emotion/README.md#benchmarks--pretrained-models)
+* [Facial Attribute Classification](./easyface/attributes/README.md#pretrained-models)
 
 
 ## Requirements
@@ -46,7 +57,7 @@ $ pip install -r requirements.txt
 
 ### Face & Landmark Detection
 
-> Need to download the pretrained weights for Face Detection Model from [here](./easyface/detection/README.md).
+> Need to download the pretrained weights for Face Detection Model from [here](./easyface/detection/README.md#pretrained-models).
 
 Run the following command to detect face and show bounding box and landmarks:
 
@@ -122,7 +133,7 @@ Sample testing structure:
 ```bash
 # with an image
 $ python recognize.py \
-    --source assets/img1.jpeg \
+    --source assets/rdj_tom.jpeg \
     --face_data assets/faces.pkl \
     --model AdaFace \
     --checkpoint FR_MODEL_WEIGHTS_PATH \
@@ -136,15 +147,45 @@ $ python recognize.py \
 
 ### Facial Expression Recognition
 
-Coming Soon...
+> Need to download the pretrained weights for Facial Expression Recognition Model from [here](./easyface/emotion/README.md#benchmarks--pretrained-models).
 
-### Age & Gender Estimation
+Run the following:
 
-Coming Soon...
+```bash
+# with an image
+$ python recognize_emotion.py \
+    --source assets/test.jpg \
+    --dataset AffectNet8 \
+    --model DAN \
+    --checkpoint FER_MODEL_WEIGHTS_PATH \
+    --det_model RetinaFace \
+    --det_checkpoint DET_MODEL_WEIGHTS_PATH \
+```
+
+![fer_result](./assets/test_results/fer_result.PNG)
 
 
+### Facial Attribute Classification
+
+> Need to download the pretrained weights for Facial Attribute Classification Model from [here](./easyface/attributes/README.md#pretrained-models).
+
+Run the following:
+
+```bash
+# with an image
+$ python recognize_att.py \
+    --source assets/asian_american.jpg \
+    --model FairFace \
+    --checkpoint FAC_MODEL_WEIGHTS_PATH \
+    --det_model RetinaFace \
+    --det_checkpoint DET_MODEL_WEIGHTS_PATH \
+```
+
+![att_result](./assets/test_results/att_result.PNG)
 
 ## References
 
 * [biubug6/Pytorch_Retinaface](https://github.com/biubug6/Pytorch_Retinaface)
 * [mk-minchul/AdaFace](https://github.com/mk-minchul/AdaFace)
+* [yaoing/DAN](https://github.com/yaoing/DAN)
+* [dchen236/FairFace](https://github.com/dchen236/FairFace)

@@ -88,7 +88,7 @@ if __name__ == '__main__':
         image = Image.fromarray(image[:, :, ::-1]).convert('RGB')
         image.show()
     
-    elif isinstance(int(str(file_path)), int):
+    elif str(file_path) == 'webcam':
         stream = WebcamStream(int(str(file_path)))
 
         for frame in stream:

@@ -13,14 +13,15 @@ def show_image(img: np.ndarray):
     return True
 
 
-def draw_box_and_landmark(image, box, text, landmark, box_color=(0, 0, 255)):
+def draw_box_and_landmark(image, box, text, landmark, box_color=(0, 0, 255), draw_lmks=True):
     # box
     cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), box_color, 2)
     cv2.putText(image, text, (box[0], box[1] - 5), cv2.FONT_HERSHEY_DUPLEX, 0.4, (255, 255, 255), lineType=cv2.LINE_AA)
 
     # landmarks
-    cv2.circle(image, (landmark[0], landmark[1]), 1, (0, 0, 255), 4)
-    cv2.circle(image, (landmark[2], landmark[3]), 1, (0, 255, 255), 4)
-    cv2.circle(image, (landmark[4], landmark[5]), 1, (255, 0, 255), 4)
-    cv2.circle(image, (landmark[6], landmark[7]), 1, (0, 255, 0), 4)
-    cv2.circle(image, (landmark[8], landmark[9]), 1, (255, 0, 0), 4)
+    if draw_lmks:
+        cv2.circle(image, (landmark[0], landmark[1]), 1, (0, 0, 255), 4)
+        cv2.circle(image, (landmark[2], landmark[3]), 1, (0, 255, 255), 4)
+        cv2.circle(image, (landmark[4], landmark[5]), 1, (255, 0, 255), 4)
+        cv2.circle(image, (landmark[6], landmark[7]), 1, (0, 255, 0), 4)
+        cv2.circle(image, (landmark[8], landmark[9]), 1, (255, 0, 0), 4)
