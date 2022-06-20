@@ -5,12 +5,13 @@ import cv2
 import numpy as np
 from PIL import Image
 from pathlib import Path
+from tqdm import tqdm
 from torchvision import transforms as T
 from typing import Union
 
 from easyface.recognition.models import *
-from easyface.utils.visualize import draw_box_and_landmark, show_image
-from easyface.utils.io import WebcamStream
+from easyface.utils.visualize import draw_box_and_landmark
+from easyface.utils.io import WebcamStream, VideoReader, VideoWriter, FPS
 from detect_align import FaceDetectAlign
 
 
@@ -28,7 +29,7 @@ class Inference:
         self.model = self.model.to(self.device)
         self.model.eval()
 
-        self.align = FaceDetectAlign(det_model, det_checkpoint)
+        self.align = FaceDetectAlign(det_model, det_checkpoint, 0.8, 0.5)
 
         self.preprocess = T.Compose([
             T.Lambda(lambda x: x / 255),
@@ -37,10 +38,9 @@ class Inference:
 
     def cosine_similarity(self, feats: np.ndarray):
         similarity_scores = feats @ self.face_embeds.T
-        print(similarity_scores)
         scores = np.max(similarity_scores, axis=1)
         inds = np.argsort(similarity_scores, axis=1)[:, -1]
-        return scores, inds
+        return similarity_scores, scores, inds
 
     def visualize(self, image, dets, scores, inds):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -58,14 +58,17 @@ class Inference:
         
     def __call__(self, img_path: Union[str, np.ndarray]):
         faces, dets, image = self.align.detect_and_align_faces(img_path, (112, 112))
+        if faces is None:
+            return cv2.cvtColor(image[0], cv2.COLOR_RGB2BGR), "No Faces detected"
+
         pfaces = self.preprocess(faces.permute(0, 3, 1, 2)).to(self.device)
         
         with torch.inference_mode():
             feats = self.model(pfaces).detach().cpu().numpy()
 
-        scores, inds = self.cosine_similarity(feats)
+        similarity_scores, scores, inds = self.cosine_similarity(feats)
         image = self.visualize(image[0], dets[0], scores, inds)
-        return image
+        return image, similarity_scores
         
 
 if __name__ == '__main__':
@@ -84,16 +87,29 @@ if __name__ == '__main__':
     inference = Inference(**args)
 
     if file_path.is_file():
-        image = inference(str(file_path))
-        image = Image.fromarray(image[:, :, ::-1]).convert('RGB')
-        image.show()
+        if file_path.suffix in ['.mp4', '.avi', '.m4v']:
+            reader = VideoReader(str(file_path))
+            writer = VideoWriter(f"{str(file_path).split('.', maxsplit=1)[0]}_out.mp4", reader.fps)
+
+            for frame in tqdm(reader):
+                image = inference(frame)[0]
+                writer.update(image[:, :, ::-1])
+            writer.write()
+        else:
+            image, scores = inference(str(file_path))
+            print(scores)
+            image = Image.fromarray(image[:, :, ::-1]).convert('RGB')
+            image.show()
     
     elif str(file_path) == 'webcam':
-        stream = WebcamStream(int(str(file_path)))
+        stream = WebcamStream(0)
+        fps = FPS()
 
         for frame in stream:
-            frame = inference(frame)
+            fps.start()
+            frame = inference(frame)[0]
+            fps.stop()
+            cv2.imshow('frame', frame)
             
-            if not show_image(frame):
-                break
-        stream.stop()
+    else:
+        raise FileNotFoundError(f"The following file does not exist: {str(file_path)}")
