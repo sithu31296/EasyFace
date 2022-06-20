@@ -128,12 +128,22 @@ Sample testing structure:
     |__ faces.pkl (output)
 ```
 
-#### Recognize with a Webcam or an Image
+#### Recognize with a Webcam or an Image or a Video
 
 ```bash
-# with an image
+# with an image or a video
 $ python recognize.py \
-    --source assets/rdj_tom.jpeg \
+    --source IMAGE_OR_VIDEO \
+    --face_data assets/faces.pkl \
+    --model AdaFace \
+    --checkpoint FR_MODEL_WEIGHTS_PATH \
+    --det_model RetinaFace \
+    --det_checkpoint DET_MODEL_WEIGHTS_PATH \
+    --recog_threshold RECOGNITION_THRESHOLD
+
+# with a webcam
+$ python recognize.py \
+    --source webcam \
     --face_data assets/faces.pkl \
     --model AdaFace \
     --checkpoint FR_MODEL_WEIGHTS_PATH \
@@ -152,9 +162,18 @@ $ python recognize.py \
 Run the following:
 
 ```bash
-# with an image
+# with an image or a video
 $ python recognize_emotion.py \
-    --source assets/test.jpg \
+    --source IMAGE_OR_VIDEO \
+    --dataset AffectNet8 \
+    --model DAN \
+    --checkpoint FER_MODEL_WEIGHTS_PATH \
+    --det_model RetinaFace \
+    --det_checkpoint DET_MODEL_WEIGHTS_PATH \
+
+# with a webcam
+$ python recognize_emotion.py \
+    --source webcam \
     --dataset AffectNet8 \
     --model DAN \
     --checkpoint FER_MODEL_WEIGHTS_PATH \
@@ -172,9 +191,17 @@ $ python recognize_emotion.py \
 Run the following:
 
 ```bash
-# with an image
+# with an image or a video
 $ python recognize_att.py \
-    --source assets/asian_american.jpg \
+    --source IMAGE_OR_VIDEO \
+    --model FairFace \
+    --checkpoint FAC_MODEL_WEIGHTS_PATH \
+    --det_model RetinaFace \
+    --det_checkpoint DET_MODEL_WEIGHTS_PATH \
+
+# with a webcam
+$ python recognize_att.py \
+    --source webcam \
     --model FairFace \
     --checkpoint FAC_MODEL_WEIGHTS_PATH \
     --det_model RetinaFace \
